@@ -12,7 +12,6 @@
 ;;;; license as circulated by CEA, CNRS and INRIA at the following URL
 ;;;; "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-
 (asdf:defsystem #:kaputt
   :description "A Simple Interactive Test Framework for Common Lisp"
   :homepage "https://github.com/michipili/cl-kaputt"
@@ -20,16 +19,20 @@
   :license "CeCILL-B"
   :components
   ((:module "src"
-    :components ((:file "kaputt")))))
+    :components ((:file "package")
+		 (:file "utilities")
+		 (:file "configuration")
+                 (:file "assert")
+		 (:file "kaputt")))))
 
-(asdf:defsystem #:kaputt/test
+(asdf:defsystem #:kaputt/testsuite
   :description "A testsuite for the Kaputt Test Framework"
   :author "Michaël Le Barbier"
   :license "CeCILL-B"
   :depends-on (#:kaputt #:cl-ppcre)
   :components
   ((:module "testsuite"
-    :components ((:file "test")))))
+    :components ((:file "entrypoint")))))
 
 (asdf:defsystem #:kaputt/example
   :description "An Example for the Kaputt Test Framework"

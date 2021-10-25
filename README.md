@@ -147,7 +147,7 @@ depending on *Kaputt*:
 (asdf:defsystem #:kaputt/example
   :description "An Example for the Kaputt Test Framework"
   :author "Michaël Le Barbier"
-  :license "MIT"
+  :license "CeCILL-B"
   :depends-on (#:kaputt)
   :components
   ((:file "example")))

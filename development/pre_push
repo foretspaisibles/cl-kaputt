@@ -1,0 +1,48 @@
+#!/bin/sh
+
+### pre_push — PRE-PUSH Hook for GIT
+
+# Kaputt (https://github.com/foretspaisibles/cl-kaputt)
+# This file is part of Kaputt.
+#
+# Copyright © 2019–2021 Michaël Le Barbier
+# All rights reserved.
+
+# This software is governed by the CeCILL-B license under French law and
+# abiding by the rules of distribution of free software.  You can  use,
+# modify and/ or redistribute the software under the terms of the CeCILL-B
+# license as circulated by CEA, CNRS and INRIA at the following URL
+# "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
+
+: ${TOPLEVELDIR:=$(git rev-parse --show-toplevel)}
+
+run()
+(
+    1>&2 printf '================================================================================\n'
+    1>&2 printf -- '--> '
+    1>&2 printf ' %s' "$@"
+    1>&2 printf '\n'
+    if "$@"; then
+	return 0
+    else
+	status="$?"
+	1>&2 printf '\n\n  Error: There was some errors while running'
+	1>&2 printf ' %s' "$@"
+	1>&2 printf '\n'
+	return "${status}"
+    fi
+)
+
+
+main()
+(
+    set -e
+    cd "${TOPLEVELDIR}"
+    run development/lint
+    run development/testsuite
+    run development/testsuite example
+)
+
+main "$@"
+
+### End of file `pre_push'

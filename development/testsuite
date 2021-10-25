@@ -14,9 +14,31 @@
 # license as circulated by CEA, CNRS and INRIA at the following URL
 # "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
+run_all_tests()
+{
+    local lisp_subsystem
+    lisp_subsystem="$1"
+    sbcl --noinform --disable-debugger\
+	 --eval "(ql:quickload :kaputt/${lisp_subsystem} :silent t)"\
+	 --eval "(if (kaputt/${lisp_subsystem}:run-all-tests)(uiop:quit 0)(uiop:quit 1))"
+}
 
-sbcl --noinform --disable-debugger\
-     --eval '(ql:quickload :kaputt/test :silent t)'\
-     --eval '(if (kaputt/test:run-all-tests)(uiop:quit 0)(uiop:quit 1))'
+main()
+{
+    case "$#-$1" in
+	0-)
+	    run_all_tests 'testsuite'
+	    ;;
+	1-testsuite|1-example)
+	    run_all_tests "$@"
+	    ;;
+	*)
+	    1>&2 printf 'Error: %s: Nothing is known about this Kaputt sunsystem.\n' "$1"
+	    return 1
+	    ;;
+    esac
+}
+
+main "$@"
 
 ### End of file `testsuite'

@@ -1,4 +1,4 @@
-;;;; test.lisp — A Testsuite for the Kaputt Test Framework
+;;;; entrypoint.lisp — A Testsuite for the Kaputt Test Framework
 
 ;;;; Kaputt (https://github.com/foretspaisibles/cl-kaputt)
 ;;;; This file is part of Kaputt.
@@ -13,14 +13,14 @@
 ;;;; "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
 
-(defpackage #:kaputt/test
+(defpackage #:kaputt/testsuite
   (:use #:common-lisp #:kaputt)
   (:export
    #:run-all-tests)
   (:documentation
    "A testsuite for the Kaputt Test Framewok."))
 
-(in-package #:kaputt/test)
+(in-package #:kaputt/testsuite)
 
 (defparameter *assertion-description* nil
   "The description of the assertion being tested.")
@@ -66,4 +66,4 @@
       (declare (ignore condition))
       nil)))
 
-;;;; End of file `test.lisp'
+;;;; End of file `entrypoint.lisp'
