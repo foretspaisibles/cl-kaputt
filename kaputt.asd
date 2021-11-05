@@ -32,7 +32,10 @@
   :depends-on (#:kaputt #:cl-ppcre)
   :components
   ((:module "testsuite"
-    :components ((:file "entrypoint")))))
+    :components ((:file "package")
+		 (:file "utilities")
+		 (:file "assert")
+		 (:file "entrypoint")))))
 
 (asdf:defsystem #:kaputt/example
   :description "An Example for the Kaputt Test Framework"

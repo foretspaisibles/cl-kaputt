@@ -1,4 +1,4 @@
-;;;; entrypoint.lisp — A Testsuite for the Kaputt Test Framework
+;;;; utilities.lisp — Utilities for the Kaputt Test Framework Testsuite
 
 ;;;; Kaputt (https://github.com/foretspaisibles/cl-kaputt)
 ;;;; This file is part of Kaputt.
@@ -14,12 +14,12 @@
 
 (in-package #:kaputt/testsuite)
 
-(define-testcase run-all-tests ()
-  (testsuite-assert))
+(defmacro assert-assertion-failed (form)
+  `(assert-condition ,form kaputt::assertion-failed))
 
-(defun run-all-tests-batch ()
-  (if (run-all-tests)
-      (uiop:quit 0)
-      (uiop:quit 1)))
+(defmacro assert-assertion-failed-description (form regex)
+  `(assert-condition ,form kaputt::assertion-failed
+       (kaputt::assertion-description)      
+     (ppcre:scan ,regex kaputt::assertion-description)))
 
-;;;; End of file `entrypoint.lisp'
+;;;; End of file `utilities.lisp'

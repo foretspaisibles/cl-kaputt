@@ -8,7 +8,7 @@ following features:
   backtrace when errors occur.
 
 - *Kaputt* is extensible, it is possible to add problem-specific
-  assertions to make tests more informative.
+  assertions to make test code more informative.
 
 - *Kaputt* fits well interactive development.
 
@@ -18,8 +18,17 @@ below for a more detailed motivation of the need for a new test framework.
 ## Table of Contents
 
   * [Installation](#installation)
-  * [Usage](#usage)
-  * [Comparison to some other available test frameworks](#comparison-to-some-other-available-test-frameworks)
+  * [Simple Usage](#simple-usage)
+  * Fixtures
+  * Mocking and Stubbing
+  * Reiteration
+  * Skipping tests
+  * TODO Flacky tests
+  * TODO Randomise test order
+  * TODO Parallelise tests
+  * TODO Parameter generator
+  * TODO Fuzzer
+  * TODO Junit Report
 
 ## Installation
 
@@ -37,7 +46,7 @@ Clone the repository in a place where ASDF can find it, for instance
 configuration. Then `(require "kaputt")`.
 
 
-## Usage
+## Simple Usage
 
 This is illustrated by the file `example.lisp` from the
 distribution. We describe an interactive session based on the content
@@ -138,6 +147,85 @@ It is possible to define parametrised testcases. See in `kaputt.lisp`
 various example of advanced usages of the `define-assertion` function.
 
 
+## Fixtures
+
+In *Kaputt* a testcase is just a normal function. It computes a
+specific value and runs in a specific environment but it is really
+just a plain Lisp function.  As a consequence there is no real need
+for supporting fixtures in *Kaputt*.
+
+A simple `let` clause can be used to set test-specific values for
+parameters.
+
+Database connection, contents, etc. can conveniently be provided by a
+`with-*` macro.
+
+## Mocking and Stubbing
+
+No support yet.
+
+
+## Reiteration
+
+There is currently no support to run again only failed tests.
+
+
+## Skipping tests
+
+Use Common Lisp features system:
+
+~~~ lisp
+(define-testcase run-arch-specific-tests ()
+	#+ARM
+	(assert- ))
+~~~
+
+## TODO Flacky tests
+
+Mark a test as flacky (non-reproducible failures).
+
+A parameter governs if flacky tests are failing or not. This parameter
+can be bound locally with a `with-*` macro.
+
+Failed flacky tests are counted separately.  This is mostly a
+documentation purpose.
+
+
+## TODO Randomise test order
+
+There is test supervisor that allows for parallel and randomised test
+execution.  Random seeds are traced all the way long
+(reproducibility). An independant random seed is used by this facility.
+
+## TODO Parallelise tests
+
+There is test supervisor that allows for parallel test
+execution. Timeline is recorded and could allow reproducibility of a
+specific run order.
+
+## TODO Parameter generator
+
+There is functions allowing for random generation of
+parameters. Random seeds are traced all the way long
+(reproducibility). An independant random seed is used by this
+facility.  What is the threads semantic?
+
+Note: Random seeds are quite complicated in lisp but they can be
+`print`-ed.
+
+## TODO Fuzzer
+
+!!! The functionality is not clear, let's see how renowned fuzzer work. !!!
+
+There is functions allowing to fuzz code.  In a testcase the `fuzz`
+macro can be used on a form to randomly modify its result.
+
+## TODO Junit Report
+
+Write test reports in JUnit format, which makes it easy to display in
+CID tools.
+
+
 ### Defining an ASDF system depending on Kaputt
 
 This snippets show an example of ASF system definition for a systeme
@@ -152,52 +240,4 @@ depending on *Kaputt*:
   :components
   ((:file "example")))
 ~~~
-
-
-## Comparison to some other available test frameworks
-
-Before writing *Kaputt* I worked with *Stefil* and *FiveAM* which in
-my experience were:
-
-
-### Not simple
-
-These other test frameworks make provision to organise tests
-hierarchically in test suites.  In *Kaputt* a test case is also a
-normal Lisp function and test suites can be modelled by test cases
-calling several test cases or test suites in sequence.  There is no
-need for specific support in the test framework to define this
-hierarchical organisation.
-
-These other test frameworks make provision to define test fixtures
-(test setup and tearoff). In *Kaputt* since a test case is also a
-function, the usual `WITH-*` idiom can be used to define test fixtures
-and therefore the test framework does not need to define specific
-support for these.
-
-
-### Not extensible
-
-These other test frameworks are built around an `IS` macro which is
-presented as a generic “do what I mean” comparison operator.  I found
-this not convenient to use in specific situations, e.g. when testing
-numerical algorithms and was very unsatisified with the kludges and
-workarounds I needed to build to still use the `IS` macro and found
-the resulting code rather convoluted and uninformative.
-
-In *Kaputt* tests are built around *assertions* and new assertions can
-be defined with the `DEFINE-ASSERTION` macro.
-
-
-### Not fitting well interactive development
-
-These other frameworks using the “do what I mean” comparison approach
-were not showing me the information I needed to make a first
-diagnostic of error conditions met and I spent a lot of time
-*evaluating* various expressions in the more-or-less right backtrace
-frame.
-
-In *Kaputt* we have total control of the report produced by the error
-condition triggered by error failures, so that reports are much more
-informative and lead to quicker error resolution
 

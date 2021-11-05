@@ -1,4 +1,4 @@
-;;;; entrypoint.lisp — A Testsuite for the Kaputt Test Framework
+;;;; package.lisp — A Testsuite for the Kaputt Test Framework
 
 ;;;; Kaputt (https://github.com/foretspaisibles/cl-kaputt)
 ;;;; This file is part of Kaputt.
@@ -12,14 +12,13 @@
 ;;;; license as circulated by CEA, CNRS and INRIA at the following URL
 ;;;; "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-(in-package #:kaputt/testsuite)
 
-(define-testcase run-all-tests ()
-  (testsuite-assert))
+(defpackage #:kaputt/testsuite
+  (:use #:common-lisp #:kaputt)
+  (:export
+   #:run-all-tests
+   #:run-all-tests-batch)
+  (:documentation
+   "A testsuite for the Kaputt Test Framewok."))
 
-(defun run-all-tests-batch ()
-  (if (run-all-tests)
-      (uiop:quit 0)
-      (uiop:quit 1)))
-
-;;;; End of file `entrypoint.lisp'
+;;;; End of file `package.lisp'

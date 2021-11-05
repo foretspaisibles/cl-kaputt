@@ -29,6 +29,7 @@
    #:assert>
    #:assert<=
    #:assert>=
+   #:assert-condition
    #:assert-string-equal
    #:assert-string=
    #:assert-string<

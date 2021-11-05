@@ -252,22 +252,44 @@ counts describing the current testsuite and a detailed failure report."))
        (is-assert-name-p (symbol)
          (and (>= (length (symbol-name symbol)) 7)
               (and (string= (symbol-name symbol) "ASSERT" :end1 6)
-                   (position (char (symbol-name symbol) 6) "-=<>"))))
+                   (position (char (symbol-name symbol) 6) "-=<>"))
+	      symbol))
        (is-assert-form-p (form)
          (is-assert-name-p (is-funcall-p form)))
+       (is-assert-macro-form-p (form)
+	 (macro-function (is-assert-form-p form)))
        (wrap-assert-form (form)
          (cond
-           ((is-assert-form-p form)
+           ((is-assert-macro-form-p form)
             `(let ((run-assertion-result t))
                (protocol-assertion-begin *current-protocol* ',(first form) ',(rest form))
                (loop :with run-assertion-p = t
                      :while run-assertion-p
                      :do
-                   (let ((*testcase-assertion-form* (quote ,form))
-                         (*testcase-assertion-args* ,(cons 'list (rest form))))
+                   (let ((*assertion-form* (quote ,form))
+                         (*assertion-args* nil))
+                     (restart-case
+                         (setf run-assertion-result ,form
+                               run-assertion-p nil)
+                       (retry ()
+                         :report
+                         (lambda (stream)
+                           (format stream "~@<Retry ~A.~@:>" ,(symbol-name (first form))))))))
+               (protocol-assertion-end *current-protocol*
+                                       ',(first form)
+                                       (if run-assertion-result :success :failure))
+               (values run-assertion-result)))
+	   ((is-assert-form-p form)
+            `(let ((run-assertion-result t))
+               (protocol-assertion-begin *current-protocol* ',(first form) ',(rest form))
+               (loop :with run-assertion-p = t
+                     :while run-assertion-p
+                     :do
+                   (let ((*assertion-form* (quote ,form))
+                         (*assertion-args* ,(cons 'list (rest form))))
                      (restart-case
                          (setf run-assertion-result
-                               (apply (function ,(first form)) *testcase-assertion-args*)
+                               (apply (function ,(first form)) *assertion-args*)
                                run-assertion-p nil)
                        (retry ()
                          :report
