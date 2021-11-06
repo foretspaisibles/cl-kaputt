@@ -12,10 +12,10 @@
 ;;;; license as circulated by CEA, CNRS and INRIA at the following URL
 ;;;; "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-
 (defpackage #:kaputt/example
   (:use #:common-lisp #:kaputt)
   (:export
+   #:run-all-tests-batch
    #:run-all-tests))
 
 (in-package #:kaputt/example)
@@ -31,5 +31,10 @@
 (define-testcase run-all-tests ()
   (cl-strings/string-downcase-turns-nil-into-a-string)
   (cl-strings/string-upcase-turns-nil-into-a-string))
+
+(defun run-all-tests-batch ()
+  (if (run-all-tests)
+      (uiop:quit 0)
+      (uiop:quit 1)))
 
 ;;;; End of file `example.lisp'

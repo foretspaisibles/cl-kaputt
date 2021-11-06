@@ -14,9 +14,9 @@
 # license as circulated by CEA, CNRS and INRIA at the following URL
 # "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
+: ${LISP:=sbcl --noinform --disable-debugger}
 
-sbcl\
-    --noinform --disable-debugger\
+${LISP}\
     --eval '(ql:quickload :org.melusina.atelier :silent t)'\
     --eval '(setf atelier:*parameter-bindings*
       (quote

@@ -15,6 +15,7 @@
 
 (defpackage #:kaputt/testsuite
   (:use #:common-lisp #:kaputt)
+  (:import-from #:alexandria #:with-unique-names)
   (:export
    #:run-all-tests
    #:run-all-tests-batch)

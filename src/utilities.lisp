@@ -14,4 +14,29 @@
 
 (in-package #:kaputt)
 
+
+;;;;
+;;;; STRING-MATCH
+;;;;
+
+(defun string-match (pattern text)
+  "Predicate recognising TEXT matching a globbing PATTERN."
+  (let ((text-length (length text))
+        (pattern-length (length pattern)))
+    (labels
+        ((match-step (i j)
+           (case (when (and (<= j text-length) (< i pattern-length))
+		   (elt pattern i))
+             ((nil)
+              (eq j text-length))
+             (#\?
+              (and (< j text-length) (match-step (1+ i) (1+ j))))
+             (#\*
+	      (or (match-step (1+ i) j) (match-step i (1+ j))))
+             (t
+              (when (< j text-length)
+                (and (char= (elt pattern i) (elt text j))
+                     (match-step (1+ i) (1+ j))))))))
+      (match-step 0 0))))
+
 ;;;; End of file `utilities.lisp'

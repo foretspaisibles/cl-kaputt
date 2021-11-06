@@ -14,12 +14,47 @@
 
 (in-package #:kaputt/testsuite)
 
-(defmacro assert-assertion-failed (form)
-  `(assert-condition ,form kaputt::assertion-failed))
+(declaim (optimize safety debug))
 
-(defmacro assert-assertion-failed-description (form regex)
-  `(assert-condition ,form kaputt::assertion-failed
-       (kaputt::assertion-description)      
-     (ppcre:scan ,regex kaputt::assertion-description)))
+(defmacro testcase-outcome-bind ((outcome &optional result output) form &body body)
+  "Run a testcase FORM in a controlled environment and validate RESULT with BODY forms."
+  (let ((buffer
+	  (gensym "BUFFER"))
+	(actual-result
+	  (or result (gensym "RESULT")))
+	(actual-output
+	  (or output (gensym "OUTPUT"))))
+    `(let ((,buffer
+	     (make-string-output-stream)))
+       (multiple-value-bind (,outcome ,actual-result)
+	   (let ((kaputt::*current-supervisor*
+		   (make-instance 'kaputt::trace-supervisor))
+		 (kaputt::*testcase-results*
+		   nil))
+	     (setf (slot-value kaputt::*current-supervisor* 'kaputt::stream-output)
+		   ,buffer)
+	     ,form)
+	 ,(unless result `(declare (ignore ,actual-result)))
+	 (let ((,actual-output
+		 (get-output-stream-string ,buffer)))
+	   ,(unless output `(declare (ignore ,actual-output)))
+	   ,@body)))))
+
+
+;;;;
+;;;; Testing STRING-MATCH
+;;;;
+
+(define-testcase testsuite-string-match ()
+  (assert-t (kaputt::string-match "" ""))
+  (assert-t (kaputt::string-match "a" "a"))
+  (assert-t (kaputt::string-match "a*" "a"))
+  (assert-t (kaputt::string-match "a*" "ab"))
+  (assert-t (kaputt::string-match "a*" "abc"))
+  (assert-t (kaputt::string-match "a?" "ab"))
+  (assert-t (kaputt::string-match "a*a" "aba"))
+  (assert-t (kaputt::string-match "a*a" "abca"))
+  (assert-t (kaputt::string-match "a?a" "aba"))
+  (assert-nil (kaputt::string-match "*a" "b")))
 
 ;;;; End of file `utilities.lisp'

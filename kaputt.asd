@@ -17,13 +17,16 @@
   :homepage "https://github.com/michipili/cl-kaputt"
   :author "Michaël Le Barbier"
   :license "CeCILL-B"
+  :depends-on (#:alexandria)
   :components
   ((:module "src"
     :components ((:file "package")
 		 (:file "utilities")
 		 (:file "configuration")
                  (:file "assert")
-		 (:file "kaputt")))))
+		 (:file "result")
+		 (:file "supervisor")
+		 (:file "testcase")))))
 
 (asdf:defsystem #:kaputt/testsuite
   :description "A testsuite for the Kaputt Test Framework"
@@ -35,6 +38,7 @@
     :components ((:file "package")
 		 (:file "utilities")
 		 (:file "assert")
+		 (:file "testcase")
 		 (:file "entrypoint")))))
 
 (asdf:defsystem #:kaputt/example

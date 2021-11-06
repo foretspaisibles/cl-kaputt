@@ -14,21 +14,35 @@
 
 (in-package #:kaputt/testsuite)
 
+(declaim (optimize safety debug))
+
 (define-condition expected-condition (simple-error)
   ((message :initarg :message)))
+
+(define-testcase a-simple-failure ()
+  (assert-t nil))
+
+(define-testcase testsuite-define-assertion ()
+  (assert-t (functionp #'assert-t))
+  (testcase-outcome-bind (outcome)
+      (testcase-ignore (a-simple-failure))
+    (assert-t outcome))
+  (testcase-outcome-bind (outcome)
+      (testcase-continue (a-simple-failure))
+    (assert-nil outcome)))
 
 (define-testcase testsuite-basic-assertions ()
   (assert-t t)
   (assert-t 1)
-  (assert-assertion-failed
+  (assert-failure
    (assert-t nil))
   (assert-nil nil)
-  (assert-assertion-failed
+  (assert-failure
    (assert-nil 0))
   (assert-type t t)
   (assert-type 1 t)
   (assert-type 1 'integer)
-  (assert-assertion-failed
+  (assert-failure
    (assert-type 1 'string)))
 
 (define-testcase testsuite-assert-condition ()
@@ -37,35 +51,33 @@
       (error 'expected-condition :message "An expected message") expected-condition
       (message)
     (string= message "An expected message"))
-  (assert-condition
-      (assert-condition (error "A simple error") nil) kaputt::assertion-failed
-      (kaputt::assertion-description)
-    (ppcre:scan "was expected to signal a condition" kaputt::assertion-description)))
+  (assert-nil
+   (assert-condition (error "A simple error") nil)))
 
 (define-testcase testsuite-assert-string* ()
-  (assert-assertion-failed-description
+  (assert-failure
    (assert-string= t (string-upcase nil))
-   "The parameter STRING1 is expected to have type STRING but actually has type")
-  (assert-assertion-failed-description
+   "*The parameter STRING1 is expected to have type STRING but actually has type*")
+  (assert-failure
    (assert-string<= "AAB" "AAAA")
-   "Every character of STRING1 is less than or equal to the character of STRING2")
-  (assert-assertion-failed-description
+   "*Every character of STRING1 is less than or equal to the character of STRING2*")
+  (assert-failure
    (assert-string<= "AAB" "AAAA")
-   "at position 2, which are #.B and #.A"))
+   "*at position 2, which are #?B and #?A*"))
 
 (define-testcase testsuite-list-as-set ()
   (assert-subsetp '(a b) '(a b c))
-  (assert-assertion-failed
+  (assert-failure
    (assert-subsetp '(a b c) '(a b)))
   (assert-set-equal '(a b) '(a b))
-  (assert-assertion-failed
+  (assert-failure
    (assert-set-equal '(a b) '(a)))
   (assert-set-equal '((a . 1)(b . 2)) '((a . 3)(b . 4)) :key #'car))
 
 (define-testcase testsuite-assert-vector* ()
-  (assert-vector-equal #('a 'b) #('a 'b))
-  (assert-assertion-failed
-   (assert-vector-equal #('a) #('a 'b))))
+  (assert-vector-equal #(0 1) #(0 1))
+  (assert-failure
+   (assert-vector-equal #(0) #(0 1))))
 
 (define-testcase testsuite-assert-float* ()
   (let ((kaputt::*double-float-precision* 1))
@@ -75,6 +87,7 @@
     (assert-float-is-essentially-equal 0.35 0.4)))
 
 (define-testcase testsuite-assert ()
+  (testsuite-define-assertion)
   (testsuite-basic-assertions)
   (testsuite-assert-condition)
   (testsuite-assert-string*)

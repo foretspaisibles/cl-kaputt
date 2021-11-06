@@ -1,4 +1,4 @@
-;;;; entrypoint.lisp — A Testsuite for the Kaputt Test Framework
+;;;; result.lisp — Test Result
 
 ;;;; Kaputt (https://github.com/foretspaisibles/cl-kaputt)
 ;;;; This file is part of Kaputt.
@@ -12,16 +12,7 @@
 ;;;; license as circulated by CEA, CNRS and INRIA at the following URL
 ;;;; "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-(in-package #:kaputt/testsuite)
+(in-package #:kaputt)
 
-(define-testcase run-all-tests ()
-  (testsuite-string-match)
-  (testsuite-assert)
-  (testsuite-testcase))
 
-(defun run-all-tests-batch ()
-  (if (run-all-tests)
-      (uiop:quit 0)
-      (uiop:quit 1)))
-
-;;;; End of file `entrypoint.lisp'
+;;;; End of file `result.lisp'

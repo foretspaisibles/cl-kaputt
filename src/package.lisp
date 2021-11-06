@@ -14,6 +14,7 @@
 
 (defpackage #:kaputt
   (:use #:common-lisp)
+  (:import-from #:alexandria #:with-unique-names)
   (:export
    ;; Assertions and Testcases
    #:define-assertion
@@ -43,20 +44,49 @@
    #:assert-float-is-definitely-greater-than
    #:assert-float-is-definitely-less-than
    #:assert-float-is-essentially-equal
-   ;; Test Run Protocol
-   #:protocol-testsuite-begin
-   #:protocol-testsuite-end
-   #:protocol-testcase-begin
-   #:protocol-testcase-end
-   #:protocol-assertion-begin
-   #:protocol-assertion-end
-   #:protocol-success-p
-   #:protocol
-   #:protocol-verbose
-   #:protocol-trace
-   #:protocol-count
-   #:protocol-record
-   #:protocol-dotta
+   ;; Results
+   #:assertion
+   #:assertion-p
+   #:make-assertion
+   #:assertion-name
+   #:assertion-path
+   #:assertion-arguments
+   #:assertion-form
+   #:assertion-type
+   #:assertion-outcome
+   #:assertion-description
+   #:assertion-condition
+   #:testcase
+   #:testcase-p
+   #:make-testcase
+   #:testcase-name
+   #:testcase-path
+   #:testcase-arguments
+   #:testcase-total
+   #:testcase-success
+   #:testcase-failure
+   #:testcase-condition
+   #:testcase-skip
+   #:testcase-results
+   ;; Utilities
+   #:assert-failure
+   ;; Error handlers
+   #:testcase-batch
+   #:testcase-ignore
+   #:testcase-continue
+   ;; Test Run Supervisor
+   #:supervisor-testsuite-begin
+   #:supervisor-testsuite-end
+   #:supervisor-testcase-begin
+   #:supervisor-testcase-end
+   #:supervisor-assertion
+   #:supervisor-success-p
+   #:supervisor
+   #:supervisor-verbose
+   #:supervisor-trace
+   #:supervisor-count
+   #:supervisor-record
+   #:supervisor-dotta
    #:*testcase-protocol-class*
    )
   (:documentation
