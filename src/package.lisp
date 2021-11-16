@@ -20,6 +20,7 @@
    #:define-assertion
    #:define-testcase
    #:assert-t
+   #:assert-t*
    #:assert-nil
    #:assert-type
    #:assert-eq

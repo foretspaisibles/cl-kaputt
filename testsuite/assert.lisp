@@ -33,9 +33,14 @@
 
 (define-testcase testsuite-basic-assertions ()
   (assert-t t)
-  (assert-t 1)
+  (assert-failure
+   (assert-t 1))
   (assert-failure
    (assert-t nil))
+  (assert-t* t)
+  (assert-t* 1)
+  (assert-failure
+   (assert-t* nil))
   (assert-nil nil)
   (assert-failure
    (assert-nil 0))

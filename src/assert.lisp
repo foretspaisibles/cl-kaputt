@@ -81,7 +81,11 @@ context to this informational messsage, like the value of some variables."
 ;;;;
 
 (define-assertion assert-t (expr)
-  "The assertion (ASSERT-T EXPR) is true, iff EXPR is a true generalised boolean."
+  "The assertion (ASSERT-T EXPR) is true, iff EXPR is T."
+  (eq t expr))
+
+(define-assertion assert-t* (expr)
+  "The assertion (ASSERT-T* EXPR) is true, iff EXPR is true as a generalised boolean."
   expr)
 
 (define-assertion assert-nil (expr)
