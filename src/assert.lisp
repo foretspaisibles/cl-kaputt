@@ -54,6 +54,7 @@ context to this informational messsage, like the value of some variables."
        (make-defun-form (docstring report body)
 	 `(defun ,name ,lambda-list
 	    ,docstring
+	    (declare (optimize (safety 3) (debug 3)))
 	    (if (progn ,@body)
 		t
 		(values

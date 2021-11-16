@@ -436,6 +436,7 @@ does not experience any failure, a NIL value is returned if a previous test case
 test suite has experienced a failure."
   (with-unique-names (toplevel-p testcase-results saved-results)
     `(defun ,testcase-name ,testcase-args
+       (declare (optimize (safety 3) (debug 3)))
        (let ((,toplevel-p
 	       (eq *current-supervisor* nil))
 	     (,testcase-results
