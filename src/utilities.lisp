@@ -39,4 +39,24 @@
                      (match-step (1+ i) (1+ j))))))))
       (match-step 0 0))))
 
+
+;;;;
+;;;; DESCRIPTION
+;;;;
+
+(defmacro description (&rest forms)
+  "Concatenate initial FORMS which are strings and use this as a control string."
+  (let* ((index
+	   (loop for form in forms
+		 for i from 0
+		 when (not (stringp form))
+		 return i)))
+    (if index
+	(let ((control-string
+		(apply #'concatenate 'string (subseq forms 0 index)))
+	      (format-arguments
+		(subseq forms index)))
+	  `(format nil ,control-string ,@format-arguments))
+	(apply #'concatenate 'string forms))))
+
 ;;;; End of file `utilities.lisp'

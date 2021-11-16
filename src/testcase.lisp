@@ -211,63 +211,71 @@ Slots are populated as follows:
 ;;;; ASSERT-FAILURE
 ;;;;
 
-(defmacro assert-failure (form &optional pattern)
-  "An assertion that verifies that the assertion FORM yields a failure.
-When a globbing PATTERN is supplied the description of the failure is
-matched against it.
-"
-  `(multiple-value-bind (success-p description)
-       (handler-case
-	   ,form
-	 (t (unexpected-condition)
-	   (make-assertion :name 'assert-failure :path *testcase-path*
-			   :arguments nil
-			   :form (list 'assert-failure (quote ,form)) :type :macro
-			   :outcome :condition
-			   :description (format nil "The form was expected to evaluate to NIL ~
-                                                     but instead it signalled a condition ~S.~
-                                                     ~%~%  ~S~%~%"
-						(type-of unexpected-condition)
-						unexpected-condition)
-			   :condition unexpected-condition)))
-     (cond
-       ((and (assertion-p success-p) (eq (assertion-name success-p) 'assert-failure))
-	success-p)
-       ((assertion-p success-p) (eq (assertion-outcome success-p) :failure)
-	(make-assertion :name 'assert-failure :path *testcase-path*
-			:arguments nil
-			:form (list 'assert-failure (quote ,form)) :type :macro
-			:outcome :success :description nil :condition nil))
-       ((and (eq success-p nil) ,pattern)
-	(if (string-match ,pattern description)
-	    (make-assertion :name 'assert-failure :path *testcase-path*
-			    :arguments nil
-			    :form (list 'assert-failure (quote ,form)) :type :macro
-			    :outcome :success :description nil :condition nil)
-	    (make-assertion :name 'assert-failure :path *testcase-path*
-			    :arguments nil
-			    :form (list 'assert-failure (quote ,form)) :type :macro
-			    :outcome :failure
-			    :description (format nil "The form was expected to evaluate to ~
-                                                      NIL and yield a description matching ~
-                                                      the pattern~%~%  ~S~%~%but the description~
-                                                      ~%~%  ~S~%~%did not."
-						 pattern description)
-			    :condition nil)))
+(defun assert-failure/unexpected-condition (form unexpected-condition)
+  "Handle unexpected conditions in ASSERT-FAILURE."
+  (make-assertion :name 'assert-failure :path *testcase-path*
+		  :arguments nil :form form :type :macro
+		  :outcome :condition
+		  :description
+		  (description "The form was expected to evaluate to NIL but instead "
+			       "it signalled a condition ~S.~%~%  ~S~%~%"
+			       (type-of unexpected-condition)
+			       unexpected-condition)
+		  :condition unexpected-condition))
+
+(defun assert-failure/main (form pattern success-p assertion-description)
+  "Handle the main line for ASSERT-FAILURE."
+  (cond
+    ((and (assertion-p success-p) (eq (assertion-name success-p) 'assert-failure))
+     success-p)
+    ((assertion-p success-p) (eq (assertion-outcome success-p) :failure)
+     (make-assertion :name 'assert-failure :path *testcase-path*
+		     :arguments nil :form form :type :macro
+		     :outcome :success :description nil :condition nil))
+    ((and (eq success-p nil) pattern)
+     (if (string-match pattern assertion-description)
+	 (make-assertion :name 'assert-failure :path *testcase-path*
+			 :arguments nil :form form :type :macro
+			 :outcome :success :description nil :condition nil)
+	 (make-assertion :name 'assert-failure :path *testcase-path*
+			 :arguments nil :form form :type :macro
+			 :outcome :failure
+			 :description
+			 (description "The form was expected to evaluate to "
+                                      "NIL and yield a description matching "
+                                      "the pattern~%~%  ~S~%~%but the description"
+                                      "~%~%  ~S~%~%did not."
+				      pattern assertion-description)
+			 :condition nil)))
        ((eq success-p nil)
 	(make-assertion :name 'assert-failure :path *testcase-path*
 			:arguments nil
-			:form (list 'assert-failure (quote ,form)) :type :macro
+			:form form :type :macro
 			:outcome :success :description nil :condition nil))
        (t
 	(make-assertion :name 'assert-failure :path *testcase-path*
 			:arguments nil
-			:form (list 'assert-failure (quote ,form)) :type :macro
+			:form form :type :macro
 			:outcome :failure
-			:description (format nil "The form was expected to evaluate ~
-                                                  to NIL but instead it yielded~%~%  ~S."
-					     success-p)
-			:condition nil)))))
+			:description
+			(description "The form was expected to evaluate "
+				     "to NIL but instead it yielded~%~%  ~S."
+				     success-p)
+			:condition nil))))
+  
+(defmacro assert-failure (form &optional pattern)
+  "An assertion that verifies that the assertion FORM yields a failure.
+When a globbing PATTERN is supplied the description of the failure is
+matched against it."
+  (let ((assertion-form
+	  (list 'assert-failure form)))
+    `(multiple-value-bind (success-p description)
+	 (handler-case
+	     ,form
+	   (t (unexpected-condition)
+	     (assert-failure/unexpected-condition ',assertion-form
+						  unexpected-condition)))
+       (assert-failure/main ',assertion-form ,pattern success-p description))))
 
 
 ;;;;
