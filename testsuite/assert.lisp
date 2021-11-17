@@ -14,8 +14,6 @@
 
 (in-package #:kaputt/testsuite)
 
-(declaim (optimize safety debug))
-
 (define-condition expected-condition (simple-error)
   ((message :initarg :message)))
 

@@ -14,8 +14,6 @@
 
 (in-package #:kaputt/testsuite)
 
-(declaim (optimize safety debug))
-
 (defmacro testcase-outcome-bind ((outcome &optional result output) form &body body)
   "Run a testcase FORM in a controlled environment and validate RESULT with BODY forms."
   (let ((buffer
@@ -55,6 +53,16 @@
   (assert-t (kaputt::string-match "a*a" "aba"))
   (assert-t (kaputt::string-match "a*a" "abca"))
   (assert-t (kaputt::string-match "a?a" "aba"))
-  (assert-nil (kaputt::string-match "*a" "b")))
+  (assert-nil (kaputt::string-match "*a" "b"))
+  (let ((pattern
+	  "*The parameter STRING1 is expected to have type STRING but actually has type*")
+	(text
+	  #.(concatenate 'string
+			 "The assertion (ASSERT-STRING= STRING1 STRING2) is true, iff STRING1 "
+			 "and STRING2" '(#\Newline) "satisfy the STRING= predicate." '(#\Newline)
+			 "This assertion supports the same keyword parameters as STRING=."
+			 '(#\Newline) "The parameter STRING1 is expected to have type STRING "
+			 "but actually has type BOOLEAN.")))
+    (assert-t (kaputt::string-match pattern text))))
 
 ;;;; End of file `utilities.lisp'

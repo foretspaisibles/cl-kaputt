@@ -14,8 +14,6 @@
 
 (in-package #:kaputt/testsuite)
 
-(declaim (optimize safety debug))
-
 (define-testcase t1-success ()
   "The first passing test should have a basic “is” test and a signals test."
   (assert= 1 1)

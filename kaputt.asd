@@ -32,7 +32,7 @@
   :description "A testsuite for the Kaputt Test Framework"
   :author "Michaël Le Barbier"
   :license "CeCILL-B"
-  :depends-on (#:kaputt #:cl-ppcre)
+  :depends-on (#:kaputt)
   :components
   ((:module "testsuite"
     :components ((:file "package")
