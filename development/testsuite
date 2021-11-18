@@ -14,14 +14,15 @@
 # license as circulated by CEA, CNRS and INRIA at the following URL
 # "https://cecill.info/licences/Licence_CeCILL-B_V1-en.txt"
 
-: ${LISP:=sbcl --noinform --disable-debugger}
+: ${LISP:=sbcl --dynamic-space-size 3741824 --noinform --disable-debugger}
 
 run_all_tests()
 {
     local lisp_subsystem
     lisp_subsystem="$1"
+    lisp_silent='t'
     ${LISP}\
-	 --eval "(ql:quickload :kaputt/${lisp_subsystem} :silent t)"\
+	 --eval "(ql:quickload :kaputt/${lisp_subsystem} :silent ${lisp_silent})"\
 	 --eval "(kaputt/${lisp_subsystem}:run-all-tests-batch)"
 }
 
