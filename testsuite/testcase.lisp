@@ -72,14 +72,28 @@
       (testcase-batch (t3))
     (assert-t outcome)
     (assert= (length (testcase-results result)) 2)
-    (assert-t (kaputt::assertion-p (first (testcase-results result))))
-    (assert-t (kaputt::testcase-p (second (testcase-results result))))))
+    (assert-t (kaputt:assertion-p (first (testcase-results result))))
+    (assert-t (kaputt:testcase-p (second (testcase-results result))))))
+
+(define-testcase t7-bad-error ()
+  "Testing condition assertions. This should fail"
+  (assert-condition
+      (error 'floating-point-overflow) division-by-zero))
+
+(define-testcase validate-t7-bad-error ()
+  (testcase-outcome-bind (outcome result)
+      (testcase-batch (t7-bad-error))
+    (assert-nil outcome)
+    (assert= (length (testcase-results result)) 1)
+    (assert-t (kaputt:assertion-p (first (testcase-results result))))
+    (assert-eq :failure (kaputt:assertion-outcome (first (testcase-results result))))))
 
 (define-testcase testsuite-testcase ()
   (validate-t1-success)
   (validate-t1-fail)
   (validate-t2)
   (validate-t2-loop)
-  (validate-t3))
+  (validate-t3)
+  (validate-t7-bad-error))
 
 ;;;; End of file `testcase.lisp'
