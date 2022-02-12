@@ -90,6 +90,10 @@ It is set to NIL otherwise.")
 		   (argument-forms details)
 		   (argument-values details))
 	   (format stream "~%~%")))
+       (format-condition (details)
+	 (when (assertion-condition details)
+	   (format stream "~&In this call, the following unexpected condition was met:~%~%")
+	   (format stream "  ~S~%~%" (assertion-condition details))))
        (format-description (details)
 	 (when (assertion-description details)
 	   (write-string (assertion-description details) stream)
@@ -104,6 +108,7 @@ It is set to NIL otherwise.")
 	       (slot-value details-designator 'details)))))
       (format-header details)
       (format-arguments details)
+      (format-condition details)
       (format-description details)
       (format-path details))))
 
@@ -365,7 +370,7 @@ test suite has experienced a failure."
 	 (setf ,testcase-results
 	       (make-testcase :name ',testcase-name
 			      :path *testcase-path*
-			      :arguments ,testcase-args
+			      :arguments (list ,@testcase-args)
 			      :total (count-total-number-of-assertions ,saved-results)
 			      :success (count-total-number-of-assertions-by-outcome
 					,saved-results

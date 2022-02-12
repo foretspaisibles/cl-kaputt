@@ -88,12 +88,16 @@
     (assert-t (kaputt:assertion-p (first (testcase-results result))))
     (assert-eq :failure (kaputt:assertion-outcome (first (testcase-results result))))))
 
+(define-testcase validate-testcase-with-arguments (a b)
+  (assert-eq a b))
+
 (define-testcase testsuite-testcase ()
   (validate-t1-success)
   (validate-t1-fail)
   (validate-t2)
   (validate-t2-loop)
   (validate-t3)
-  (validate-t7-bad-error))
+  (validate-t7-bad-error)
+  (validate-testcase-with-arguments t t))
 
 ;;;; End of file `testcase.lisp'
