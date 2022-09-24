@@ -15,4 +15,7 @@ jobs:
     - name: 'Install host SBCL'
       run: |
         sudo apt-get -qq update
-        sudo apt-get -qq install sbcl libcapstone-dev
+        sudo apt-get -qq install sbcl texinfo
+    - name: 'Run testsuite'
+      run: |
+        development/testsuite
